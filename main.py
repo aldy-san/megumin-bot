@@ -5,6 +5,7 @@ import json
 import random
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 from keep_alive import keep_alive
 client = discord.Client()
 
@@ -64,7 +65,19 @@ def getRegKuadratik(input_x, input_y):
     output += f"a₂ = {round(spl_ans[2][0], 5)}\n"
     output += "\nRegresi kuadratiknya adalah:\n"
     output += f"y = {round(spl_ans[0][0], 5)} + {round(spl_ans[1][0], 5)}x + {round(spl_ans[2][0], 5)}x²"
-  return output
+
+    plt.scatter(tabel['xᵢ'], tabel['yᵢ'])
+    plt.plot(tabel['xᵢ'], spl_ans[0][0] + spl_ans[1][0] * tabel['xᵢ'],
+            label=f"y = {spl_ans[0][0]} + {spl_ans[1][0]}x",
+            c="r")
+    plt.xlabel('xᵢ')
+    plt.ylabel('yᵢ')
+    plt.legend(loc='best', borderaxespad=0.)
+    plt.title('Regresi Linear')
+    grafik = discord.File('grafik.png')
+    plt.savefig('grafik.png')
+    plt.close()
+  return output, grafik
 
 def getRegLinear(input_x, input_y):
   output = ""
@@ -146,9 +159,10 @@ async def on_message(message):
       input_x = [ float(x) for x in input_msg[0].split(" ")]
       input_y = [ float(x) for x in input_msg[1].split(" ")]
       pesan = "```"
-      pesan = getRegLinear(input_x, input_y)
+      await pesan, grafik = getRegLinear(input_x, input_y)
       pesan += "```"
     await message.channel.send(pesan)
+    await message.channel.send(grafik)
 
   if msg.startswith('$regKuadratik'):
     input_msg = msg.split("$regKuadratik ",1)[1].split(";")
