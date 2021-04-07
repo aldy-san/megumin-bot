@@ -18,7 +18,7 @@ dosen = [
   "tes"
 ]
 def getRegKuadratik(input_x, input_y):
-  output = ""
+  output = "```"
   if(len(input_x) != len(input_y)):
     output += "Inputnya salah Blokk!!"
   else:
@@ -67,20 +67,20 @@ def getRegKuadratik(input_x, input_y):
     output += f"y = {round(spl_ans[0][0], 5)} + {round(spl_ans[1][0], 5)}x + {round(spl_ans[2][0], 5)}x²"
 
     plt.scatter(tabel['xᵢ'], tabel['yᵢ'])
-    plt.plot(tabel['xᵢ'], spl_ans[0][0] + spl_ans[1][0] * tabel['xᵢ'],
-            label=f"y = {spl_ans[0][0]} + {spl_ans[1][0]}x",
+    plt.plot(tabel['xᵢ'], spl_ans[0][0] + spl_ans[1][0] * tabel['xᵢ'] + spl_ans[2][0] * pow(tabel['xᵢ'],2),
+            label=f"y = {round(spl_ans[0][0], 5)} + {round(spl_ans[1][0], 5)}x + {round(spl_ans[2][0], 5)}x²",
             c="r")
     plt.xlabel('xᵢ')
     plt.ylabel('yᵢ')
     plt.legend(loc='best', borderaxespad=0.)
-    plt.title('Regresi Linear')
-    grafik = discord.File('grafik.png')
-    plt.savefig('grafik.png')
+    plt.title('Regresi Kuadratik')
+    plt.savefig('grafik_kuadratik.png')
+    grafik = discord.File('grafik_kuadratik.png')
     plt.close()
   return output, grafik
 
 def getRegLinear(input_x, input_y):
-  output = ""
+  output = "```"
   if(len(input_x) != len(input_y)):
     output += "Inputnya salah Blokk!!"
   else: 
@@ -118,7 +118,18 @@ def getRegLinear(input_x, input_y):
 
     output += "\nRegresi liniernya adalah:\n"
     output += f"y = {spl_ans[0][0]} + {spl_ans[1][0]}x"
-  return output
+    plt.scatter(tabel['xᵢ'], tabel['yᵢ'])
+    plt.plot(tabel['xᵢ'], spl_ans[0][0] + spl_ans[1][0] * tabel['xᵢ'],
+            label=f"y = {spl_ans[0][0]} + {spl_ans[1][0]}x",
+            c="r")
+    plt.xlabel('xᵢ')
+    plt.ylabel('yᵢ')
+    plt.legend(loc='best', borderaxespad=0.)
+    plt.title('Regresi Linier')
+    plt.savefig('grafik_linier.png')
+    grafik = discord.File('grafik_linier.png')
+    plt.close()
+  return output, grafik
 
 def get_quote():
   response = requests.get("https://zenquotes.io/api/random")
@@ -158,11 +169,10 @@ async def on_message(message):
     else:
       input_x = [ float(x) for x in input_msg[0].split(" ")]
       input_y = [ float(x) for x in input_msg[1].split(" ")]
-      pesan = "```"
       pesan, grafik = getRegLinear(input_x, input_y)
       pesan += "```"
-    await message.channel.send(pesan)
-    await message.channel.send(file=grafik)
+      await message.channel.send(pesan)
+      await message.channel.send(file=grafik)
 
   if msg.startswith('$regKuadratik'):
     input_msg = msg.split("$regKuadratik ",1)[1].split(";")
@@ -171,9 +181,9 @@ async def on_message(message):
     else:
       input_x = [ float(x) for x in input_msg[0].split(" ")]
       input_y = [ float(x) for x in input_msg[1].split(" ")]
-      pesan = "```"
-      pesan += getRegKuadratik(input_x, input_y)
+      pesan, grafik = getRegKuadratik(input_x, input_y)
       pesan += "```"
     await message.channel.send(pesan)
+    await message.channel.send(file=grafik)
 keep_alive()
 client.run(os.getenv('TOKEN'))
