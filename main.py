@@ -123,7 +123,7 @@ async def on_message(message):
     return
   msg = message.content
   if msg.startswith('$hello'):
-    await message.channel.send('Hello!')
+    await message.channel.send('```Hello!```')
 
   if msg.startswith('$megumin'):
     await message.channel.send('Wangy Wangy')
@@ -132,30 +132,34 @@ async def on_message(message):
     await message.channel.send(random.choice(katain))
   
   if msg == '$megumin help':
-    pesan = "command is just\n"
+    pesan = "```command is just\n"
     pesan += "$regLinier\n"
     pesan += "$regKuadratik\n"
+    pesan += "```"
     await message.channel.send(pesan)
   
   if msg.startswith('$regLinier'):
     input_msg = msg.split("$regLinier ",1)[1].split(";")
     if(input_msg[0] == "help"):
-      pesan = "Contoh Input = $regLinier 1 2 3 4 5;1.0 2.0 3.0 4.0 5.0"
+      pesan = "```Contoh Input = $regLinier 1 2 3 4 5;1.0 2.0 3.0 4.0 5.0```"
     else:
       input_x = [ float(x) for x in input_msg[0].split(" ")]
       input_y = [ float(x) for x in input_msg[1].split(" ")]
+      pesan = "```"
       pesan = getRegLinear(input_x, input_y)
+      pesan += "```"
     await message.channel.send(pesan)
 
   if msg.startswith('$regKuadratik'):
     input_msg = msg.split("$regKuadratik ",1)[1].split(";")
-    await message.channel.send("hai")
     if(input_msg[0] == "help"):
-      pesan = "Contoh Input = $regKuadratik 1 2 3 4 5;1.0 2.0 3.0 4.0 5.0"
+      pesan = "```Contoh Input = $regKuadratik 1 2 3 4 5;1.0 2.0 3.0 4.0 5.0```"
     else:
       input_x = [ float(x) for x in input_msg[0].split(" ")]
       input_y = [ float(x) for x in input_msg[1].split(" ")]
-      pesan = getRegKuadratik(input_x, input_y)
+      pesan = "```"
+      pesan += getRegKuadratik(input_x, input_y)
+      pesan += "```"
     await message.channel.send(pesan)
 keep_alive()
 client.run(os.getenv('TOKEN'))
