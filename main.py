@@ -116,7 +116,7 @@ def getRegLinear(input_x, input_y):
     output += f"a₀ = {spl_ans[0][0]}\n"
     output += f"a₁ = {spl_ans[1][0]}\n"
 
-    output += "\nRegresi liniarnya adalah:\n"
+    output += "\nRegresi liniernya adalah:\n"
     output += f"y = {spl_ans[0][0]} + {spl_ans[1][0]}x"
   return output
 
@@ -159,10 +159,10 @@ async def on_message(message):
       input_x = [ float(x) for x in input_msg[0].split(" ")]
       input_y = [ float(x) for x in input_msg[1].split(" ")]
       pesan = "```"
-      await pesan, grafik = getRegLinear(input_x, input_y)
+      pesan, grafik = getRegLinear(input_x, input_y)
       pesan += "```"
     await message.channel.send(pesan)
-    await message.channel.send(grafik)
+    await message.channel.send(file=grafik)
 
   if msg.startswith('$regKuadratik'):
     input_msg = msg.split("$regKuadratik ",1)[1].split(";")
