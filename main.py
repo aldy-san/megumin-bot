@@ -13,7 +13,8 @@ katain = ["GOBLOK!","TOLOL!", "BAKA!", "BUTA YAROU!"]
 dosen = [
   "Kartika",
   "Agusta",
-  "Yahahawahyu"
+  "Yahahawahyu",
+  "tes"
 ]
 
 def get_quote():
