@@ -54,14 +54,14 @@ def getRegKuadratik(input_x, input_y):
                         ])
 
     output += "\n\nDidapat SPL:\n"
-    output += f"{spl_konst[0][0]}a₀ + {spl_konst[0][1]}a₁ + {spl_konst[0][2]}a₂ = {spl_hasil[0][0]}"
-    output += f"{spl_konst[1][0]}a₀ + {spl_konst[1][1]}a₁ + {spl_konst[1][2]}a₂ = {spl_hasil[1][0]}"
-    output += f"{spl_konst[2][0]}a₀ + {spl_konst[2][1]}a₁ + {spl_konst[2][2]}a₂ = {spl_hasil[2][0]}"
+    output += f"{spl_konst[0][0]}a₀ + {spl_konst[0][1]}a₁ + {spl_konst[0][2]}a₂ = {spl_hasil[0][0]}\n"
+    output += f"{spl_konst[1][0]}a₀ + {spl_konst[1][1]}a₁ + {spl_konst[1][2]}a₂ = {spl_hasil[1][0]}\n"
+    output += f"{spl_konst[2][0]}a₀ + {spl_konst[2][1]}a₁ + {spl_konst[2][2]}a₂ = {spl_hasil[2][0]}\n"
     spl_ans = np.linalg.solve(spl_konst, spl_hasil)
     output += "\nSolusi SPL ini adalah:\n"
-    output += f"a₀ = {round(spl_ans[0][0], 5)}"
-    output += f"a₁ = {round(spl_ans[1][0], 5)}"
-    output += f"a₂ = {round(spl_ans[2][0], 5)}"
+    output += f"a₀ = {round(spl_ans[0][0], 5)}\n"
+    output += f"a₁ = {round(spl_ans[1][0], 5)}\n"
+    output += f"a₂ = {round(spl_ans[2][0], 5)}\n"
     output += "\nRegresi kuadratiknya adalah:\n"
     output += f"y = {round(spl_ans[0][0], 5)} + {round(spl_ans[1][0], 5)}x + {round(spl_ans[2][0], 5)}x²"
   return output
@@ -87,7 +87,7 @@ def getRegLinear(input_x, input_y):
     output += "\n"
     output += sum_tabel.to_string(index=False)
     output += "\n\nDidapat SPL:\n"
-    output += f"{len(input_x[0])}a₀ + {sum_tabel['Σxᵢ'][0]}a₁ {sum_tabel['Σyᵢ'][0]}"
+    output += f"{len(input_x[0])}a₀ + {sum_tabel['Σxᵢ'][0]}a₁ {sum_tabel['Σyᵢ'][0]}\n"
 
     spl_konst = np.array([
       [len(input_x[0]), sum_tabel['Σxᵢ'][0]],
@@ -100,8 +100,8 @@ def getRegLinear(input_x, input_y):
 
     spl_ans = np.linalg.solve(spl_konst, spl_hasil)
     output += "Solusi SPL ini adalah:\n"
-    output += f"a₀ = {spl_ans[0][0]}"
-    output += f"a₁ = {spl_ans[1][0]}"
+    output += f"a₀ = {spl_ans[0][0]}\n"
+    output += f"a₁ = {spl_ans[1][0]}\n"
 
     output += "\nRegresi liniarnya adalah:\n"
     output += f"y = {spl_ans[0][0]} + {spl_ans[1][0]}x"
@@ -122,16 +122,21 @@ async def on_message(message):
   if message.author == client.user:
     return
   msg = message.content
-  if message.content.startswith('$hello'):
+  if msg.startswith('$hello'):
     await message.channel.send('Hello!')
 
-  if message.content.startswith('$megumin'):
+  if msg.startswith('$megumin'):
     await message.channel.send('Wangy Wangy')
-
 
   if any(word in msg for word in dosen):
     await message.channel.send(random.choice(katain))
-
+  
+  if msg == '$megumin help':
+    pesan = "command is just\n"
+    pesan += "$regLinier\n"
+    pesan += "$regKuadratik\n"
+    await message.channel.send(pesan)
+  
   if msg.startswith('$regLinier'):
     input_msg = msg.split("$regLinier ",1)[1].split(";")
     if(input_msg[0] == "help"):
