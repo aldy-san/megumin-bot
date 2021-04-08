@@ -2,32 +2,48 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import discord
-
-def wrapText(pesan):
-  temp ="```"
-  temp += pesan
-  temp += "```"
-  return temp
-
-def stepGaussJordan(spl_konst, spl_hasil):
-  output =""
-  matrix_spl = np.concatenate((spl_konst, spl_hasil.T), axis=1)
-  subsNum = {
+subsNum = {
     0: "₀",
     1: "₁",
     2: "₂",
     3: "₃",
     4: "₄"
   }
+def wrapText(pesan):
+  temp ="```"
+  temp += pesan
+  temp += "```"
+  return temp
+def printMatriksSPL(matrix_spl):
+  spl = ""
+  baris = len(matrix_spl)
+  kolom = len(matrix_spl[0])
+  
+  for i in range(baris):
+    for j in range(kolom):
+        if (j == kolom - 2):
+            spl += f"{round(matrix_spl[i][j], 3)}a{subsNum[j]} = "
+        elif (j == kolom - 1):
+            spl += f"{round(matrix_spl[i][j], 3)}"
+        else:
+            spl += f"{round(matrix_spl[i][j], 3)}a{subsNum[j]} + "
+    spl += "\n"
+  return spl
+def stepGaussJordan(spl_konst, spl_hasil):
+  output =""
+  matrix_spl = np.concatenate((spl_konst, spl_hasil.T), axis=1)
   matrix_spl = matrix_spl.astype(float)
   baris = len(matrix_spl)
   kolom = len(matrix_spl[0])
   output += "==========================================\n"
   output += "===============GAUSS JORDAN===============\n"
+  output += "==========================================\n"
+  output += "SPL AWAL:\n"
+  output += printMatriksSPL(matrix_spl)
   for x in range(baris):
       #Print SPL Sekarang
       # NGEBAGI BARIS
-      pembagi = matrix_spl[x][x]
+      pembagi = round(matrix_spl[x][x],3)
       output += "------------------------------------------\n"
       for i in range(baris):
           for j in range(kolom):
@@ -63,10 +79,8 @@ def stepGaussJordan(spl_konst, spl_hasil):
                   pengurang = 0 - matrix_spl[x][j]*kelipatan
                   matrix_spl[i][j] =  matrix_spl[i][j] + pengurang 
   output += ("------------------------------------------\n")
-  output += "\nSPL AKHIR:\n"
-  output += f"{matrix_spl[0][0]}a₀ + {matrix_spl[0][1]}a₁ + {matrix_spl[0][2]}a₂ = {matrix_spl[0][3]}\n"
-  output += f"{matrix_spl[1][0]}a₀ + {matrix_spl[1][1]}a₁ + {matrix_spl[1][2]}a₂ = {matrix_spl[1][3]}\n"
-  output += f"{matrix_spl[2][0]}a₀ + {matrix_spl[2][1]}a₁ + {matrix_spl[2][2]}a₂ = {matrix_spl[2][3]}\n"
+  output += "SPL AKHIR:\n"
+  output += printMatriksSPL(matrix_spl)
   return output
 
 def getRegKuadratik(input_x, input_y):
