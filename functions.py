@@ -8,6 +8,7 @@ def wrapText(pesan):
   temp += pesan
   temp += "```"
   return temp
+
 def getRegKuadratik(input_x, input_y):
   output = ""
   if(len(input_x) != len(input_y)):
