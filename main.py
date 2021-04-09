@@ -30,13 +30,13 @@ async def on_message(message):
     pesan += "\n**Features**\n"
     pesan += "Regresi Linier - $regLinier\n"
     pesan += "Regresi Kuadratik - $regKuadratik\n"
-    pesan += "Gauss Jordan (Only 3x3 Matriks) - $gaussJordan\n\n"
+    pesan += "Gauss Jordan - $gaussJordan\n\n"
     pesan += "Type help after prefix to see Example input\n"
     pesan += "Ex: $regLinier help\n"
     pesan += "\nThe Weeb Behind This Bot:\n"
     pesan += "[Aldy-san](https://github.com/aldy-san) and [Catyousha](https://github.com/Catyousha)."
     embed = discord.Embed()
-    embed.title = "💥 Welcome to Megumin 0.3v 💥"
+    embed.title = "💥 Welcome to Megumin 0.3.1v 💥"
     embed.description = pesan
     embed.color = discord.Colour.red()
     await message.channel.send(embed=embed)
@@ -51,11 +51,12 @@ async def on_message(message):
         input_msg = msg.split("$gaussJordan\n")[1]
         spl_konst = input_msg.split("and\n")[0].split(";\n")
         spl_hasil = input_msg.split("and\n")[1].split(",\n")
-        spl_konst = np.array([
-                    [float(x) for x in spl_konst[0].split(", ")],
-                    [float(x) for x in spl_konst[1].split(", ")],
-                    [float(x) for x in spl_konst[2].split(", ")],
-                    ])
+        n = len(spl_konst) - 1
+        temp =[]
+        spl_konst.pop()
+        for x in spl_konst:
+            temp += [float(y) for y in x.split(", ")]
+        spl_konst = np.reshape( np.array(temp), (-1, n))
         spl_hasil = np.array([[float(x) for x in spl_hasil[0].split(", ")]])
         pesan = stepGaussJordan(spl_konst,spl_hasil)
         await message.channel.send(wrapText(pesan))
