@@ -14,5 +14,6 @@ Gauss Jordan - $gaussJordan
 Humming Code - $hummingCode
 
 Type help after prefix to see Example input
+
 Ex: $regLinier help
 
