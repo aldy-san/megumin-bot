@@ -6,9 +6,6 @@ from hummingCode import *
 from keep_alive import keep_alive
 client = discord.Client()
 
-katain = ["GOBLOK!","TOLOL!", "BAKA!", "BUTA YAROU!"]
-dosen = ["Kartika","Agusta","Yahahawahyu"]
-  
 @client.event
 async def on_ready():
   print('We have logged in as {0.user}'.format(client))
@@ -20,10 +17,6 @@ async def on_message(message):
   if msg.startswith('$hello'):
     await message.channel.send(wrapText("Hello! 🥱"))
 
-
-  if any(word in msg for word in dosen):
-    await message.channel.send(random.choice(katain))
-  
   if msg == '$help':
     pesan = ""
     pesan += "Megumin Bot is bot to Calculate some stuff\n\n"
@@ -36,7 +29,8 @@ async def on_message(message):
     pesan += "Type help after prefix to see Example input\n"
     pesan += "Ex: $regLinier help\n"
     pesan += "\nThe Weeb Behind This Bot:\n"
-    pesan += "[Aldy-san](https://github.com/aldy-san) and [Catyousha](https://github.com/Catyousha)."
+    pesan += "[Aldy-san](https://github.com/aldy-san) and [Catyousha](https://github.com/Catyousha).\n\n"
+    pesan += "See [Github Repo](https://github.com/aldy-san/megumin-bot)."
     embed = discord.Embed()
     embed.title = "💥 Welcome to Megumin 0.3.5v 💥"
     embed.description = pesan
