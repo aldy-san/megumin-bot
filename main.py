@@ -2,6 +2,7 @@ import discord
 import os
 import random
 from functions import *
+from hummingCode import *
 from keep_alive import keep_alive
 client = discord.Client()
 
@@ -31,13 +32,15 @@ async def on_message(message):
     pesan += "Regresi Linier - $regLinier\n"
     pesan += "Regresi Kuadratik - $regKuadratik\n"
     pesan += "Gauss Jordan - $gaussJordan\n\n"
+    pesan += "Humming Code - $hummingCode\n\n"
     pesan += "Type help after prefix to see Example input\n"
     pesan += "Ex: $regLinier help\n"
     pesan += "\nThe Weeb Behind This Bot:\n"
     pesan += "[Aldy-san](https://github.com/aldy-san) and [Catyousha](https://github.com/Catyousha)."
     embed = discord.Embed()
-    embed.title = "💥 Welcome to Megumin 0.3.1v 💥"
+    embed.title = "💥 Welcome to Megumin 0.3.5v 💥"
     embed.description = pesan
+    print(pesan)
     embed.color = discord.Colour.red()
     await message.channel.send(embed=embed)
 
@@ -93,6 +96,18 @@ async def on_message(message):
         await message.channel.send(file=grafik)
       except:
         await message.channel.send(wrapText("!!! ERROR !!!\nAda error apa mbuh ga tau, ga ngurus."))
-      
+  
+  if msg.startswith('$hummingCode'):
+    input_msg = msg.split("$hummingCode ", 1)
+    if(input_msg[1] == 'help'):
+      pesan = "Contoh Input = $hummingCode 01010011 00110001 00100000 01010100 01001001"
+      await message.channel.send(wrapText(pesan))
+    else:
+      try:
+        pesan = humming_code(input_msg[1])
+        await message.channel.send(wrapText(pesan))
+      except:
+        await message.channel.send(wrapText("!!! ERROR !!!\nAda error apa mbuh ga tau, ga ngurus."))
+    
 keep_alive()
 client.run(os.getenv('TOKEN'))
