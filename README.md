@@ -5,15 +5,11 @@ Megumin Bot is bot to Calculate some stuff
 $
 
 ## Features
-Regresi Linier - $regLinier 
-
-Regresi Kuadratik - $regKuadratik 
-
-Gauss Jordan - $gaussJordan
-
-Humming Code - $hummingCode
+* Regresi Linier - $regLinier 
+* Regresi Kuadratik - $regKuadratik 
+* Gauss Jordan - $gaussJordan
+* Humming Code - $hummingCode
 
 Type help after prefix to see Example input
-
-Ex: $regLinier help
+* Ex: $regLinier help
 
