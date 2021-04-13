@@ -3,12 +3,15 @@ import os
 import random
 from functions import *
 from hummingCode import *
+from interpolasi import *
 from keep_alive import keep_alive
 client = discord.Client()
-
+version = "0.3.6v"
+errorMsg = "!!! ERROR !!!\nAda error apa mbuh ga tau, ga ngurus."
 @client.event
 async def on_ready():
   print('We have logged in as {0.user}'.format(client))
+  await client.change_presence(activity=discord.Game(name="$help | Megumin "+version))
 @client.event
 async def on_message(message):
   if message.author == client.user:
@@ -32,11 +35,21 @@ async def on_message(message):
     pesan += "[Aldy-san](https://github.com/aldy-san) and [Catyousha](https://github.com/Catyousha).\n\n"
     pesan += "See [Github Repo](https://github.com/aldy-san/megumin-bot)."
     embed = discord.Embed()
-    embed.title = "💥 Welcome to Megumin 0.3.5v 💥"
+    embed.title = "💥 Welcome to Megumin "+version+" 💥"
     embed.description = pesan
-    print(pesan)
     embed.color = discord.Colour.red()
     await message.channel.send(embed=embed)
+
+  if msg.startswith('$interpolLinier'):
+    if "help" in msg:
+      pesan = "Contoh Input:\n"
+      pesan += "$interpolLinier y=2 titik_1=1,5 titik_2=4,2"
+      await message.channel.send(wrapText(pesan))
+    else:
+      try:
+        await message.channel.send(wrapText(linier(msg)))
+      except:
+        await message.channel.send(wrapText(errorMsg))
 
   if msg.startswith('$gaussJordan'):
     if "help" in msg:
@@ -58,7 +71,7 @@ async def on_message(message):
         pesan = stepGaussJordan(spl_konst,spl_hasil)
         await message.channel.send(wrapText(pesan))
       except:
-        await message.channel.send(wrapText("!!! ERROR !!!\nAda error apa mbuh ga tau, ga ngurus."))
+        await message.channel.send(wrapText(errorMsg))
       
 
   if msg.startswith('$regLinier'):
@@ -74,7 +87,7 @@ async def on_message(message):
         await message.channel.send(wrapText(pesan))
         await message.channel.send(file=grafik)
       except:
-        await message.channel.send(wrapText("!!! ERROR !!!\nAda error apa mbuh ga tau, ga ngurus."))
+        await message.channel.send(wrapText(errorMsg))
     
   if msg.startswith('$regKuadratik'):
     input_msg = msg.split("$regKuadratik ",1)[1].split(";")
@@ -89,7 +102,7 @@ async def on_message(message):
         await message.channel.send(wrapText(pesan))
         await message.channel.send(file=grafik)
       except:
-        await message.channel.send(wrapText("!!! ERROR !!!\nAda error apa mbuh ga tau, ga ngurus."))
+        await message.channel.send(wrapText(errorMsg))
   
   if msg.startswith('$hummingCode'):
     input_msg = msg.split("$hummingCode ", 1)
@@ -101,7 +114,7 @@ async def on_message(message):
         pesan = humming_code(input_msg[1])
         await message.channel.send(wrapText(pesan))
       except:
-        await message.channel.send(wrapText("!!! ERROR !!!\nAda error apa mbuh ga tau, ga ngurus."))
+        await message.channel.send(wrapText(errorMsg))
     
 keep_alive()
 client.run(os.getenv('TOKEN'))
