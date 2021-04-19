@@ -22,11 +22,11 @@ def printMatriksSPL(matrix_spl):
   for i in range(baris):
     for j in range(kolom):
         if (j == kolom - 2):
-            spl += f"{round(matrix_spl[i][j], 3)}a{subsNum[j]} = "
+            spl += f"{round(matrix_spl[i][j], 3):g}a{subsNum[j]} = "
         elif (j == kolom - 1):
-            spl += f"{round(matrix_spl[i][j], 3)}"
+            spl += f"{round(matrix_spl[i][j], 3):g}"
         else:
-            spl += f"{round(matrix_spl[i][j], 3)}a{subsNum[j]} + "
+            spl += f"{round(matrix_spl[i][j], 3):g}a{subsNum[j]} + "
     spl += "\n"
   return spl
 def stepGaussJordan(spl_konst, spl_hasil):
@@ -48,13 +48,13 @@ def stepGaussJordan(spl_konst, spl_hasil):
       for i in range(baris):
           for j in range(kolom):
               if (j == kolom - 2):
-                  output += f"{round(matrix_spl[i][j], 3)}a{subsNum[j]} = "
+                  output += f"{round(matrix_spl[i][j], 3):g}a{subsNum[j]} = "
               elif (j == kolom - 1):
-                  output += f"{round(matrix_spl[i][j], 3)}"
+                  output += f"{round(matrix_spl[i][j], 3):g}"
                   if (i == x):
-                      output += f"  => B{subsNum[x+1]} / {pembagi}"
+                      output += f"  => B{subsNum[x+1]} / {pembagi:g}"
               else:
-                  output += f"{round(matrix_spl[i][j], 3)}a{subsNum[j]} + "
+                  output += f"{round(matrix_spl[i][j], 3):g}a{subsNum[j]} + "
           output += "\n"
       for i in range(kolom):
           if (i >= x):
@@ -64,13 +64,13 @@ def stepGaussJordan(spl_konst, spl_hasil):
       for i in range(baris):
           for j in range(kolom):
               if (j == kolom - 2):
-                  output += f"{round(matrix_spl[i][j], 3)}a{subsNum[j]} = "
+                  output += f"{round(matrix_spl[i][j], 3):g}a{subsNum[j]} = "
               elif (j == kolom - 1):
-                  output += f"{round(matrix_spl[i][j], 3)}"
+                  output += f"{round(matrix_spl[i][j], 3):g}"
                   if (i != x):
-                      output += f"  => B{subsNum[i+1]} - ({round(matrix_spl[i][x], 3)})*B{subsNum[x+1]}"
+                      output += f"  => B{subsNum[i+1]} - ({round(matrix_spl[i][x], 3):g})*B{subsNum[x+1]}"
               else:
-                  output += f"{round(matrix_spl[i][j], 3)}a{subsNum[j]} + "
+                  output += f"{round(matrix_spl[i][j], 3):g}a{subsNum[j]} + "
           output += "\n"
       for i in range(baris):
           if(i != x):
@@ -142,7 +142,7 @@ def getRegKuadratik(input_x, input_y):
   return output, grafik
 
 def getRegLinear(input_x, input_y):
-  output = "```"
+  output = ""
   if(len(input_x) != len(input_y)):
     output += "Inputnya salah Blokk!!"
   else: 
@@ -161,7 +161,8 @@ def getRegLinear(input_x, input_y):
     output += "\n"
     output += sum_tabel.to_string(index=False)
     output += "\n\nDidapat SPL:\n"
-    output += f"{len(input_x[0])}a₀ + {sum_tabel['Σxᵢ'][0]}a₁ {sum_tabel['Σyᵢ'][0]}\n"
+    output += f"{len(input_x[0])}a₀ + {sum_tabel['Σxᵢ'][0]}a₁ =  {sum_tabel['Σyᵢ'][0]}\n"
+    output += f"{sum_tabel['Σxᵢ'][0]}a₀ + {sum_tabel['Σxᵢ²'][0]}a₁ =  {sum_tabel['Σxᵢyᵢ'][0]}\n"
     spl_konst = np.array([
       [len(input_x[0]), sum_tabel['Σxᵢ'][0]],
       [sum_tabel['Σxᵢ'][0], sum_tabel['Σxᵢ²'][0]]
@@ -171,7 +172,7 @@ def getRegLinear(input_x, input_y):
       [sum_tabel['Σxᵢyᵢ'][0]]
     ])
     spl_ans = np.linalg.solve(spl_konst, spl_hasil)
-    output += "Solusi SPL ini adalah:\n"
+    output += "\nSolusi SPL ini adalah:\n"
     output += f"a₀ = {spl_ans[0][0]}\n"
     output += f"a₁ = {spl_ans[1][0]}\n"
     output += "\nRegresi liniernya adalah:\n"

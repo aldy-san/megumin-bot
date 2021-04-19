@@ -1,13 +1,18 @@
 import discord
 import os
 import random
+from googletrans import Translator
 from functions import *
 from hummingCode import *
 from interpolasi import *
 from keep_alive import keep_alive
 client = discord.Client()
 version = "0.3.6v"
-errorMsg = "!!! ERROR !!!\nAda error apa mbuh ga tau, ga ngurus."
+errorMsg = "Ada error apa mbuh ga tau, ga ngurus.\nCek lagi input nya gan"
+errorEmbed = discord.Embed()
+errorEmbed.title = "!!! ERROR !!!"
+errorEmbed.description = errorMsg
+errorEmbed.color = discord.Colour.red()
 @client.event
 async def on_ready():
   print('We have logged in as {0.user}'.format(client))
@@ -27,7 +32,8 @@ async def on_message(message):
     pesan += "\n**Features**\n"
     pesan += "Regresi Linier - $regLinier\n"
     pesan += "Regresi Kuadratik - $regKuadratik\n"
-    pesan += "Gauss Jordan - $gaussJordan\n\n"
+    pesan += "Gauss Jordan - $gaussJordan\n"
+    pesan += "Interpol Linier - $interpolLinier\n\n"
     pesan += "Humming Code - $hummingCode\n\n"
     pesan += "Type help after prefix to see Example input\n"
     pesan += "Ex: $regLinier help\n"
@@ -39,7 +45,20 @@ async def on_message(message):
     embed.description = pesan
     embed.color = discord.Colour.red()
     await message.channel.send(embed=embed)
-
+  #Translator
+  if msg.startswith("$ja-id"):
+    input_msg = msg.split("$ja-id ")[1]
+    translator = Translator()  
+    translate_text = translator.translate(input_msg,src="ja", dest='id')
+    translate_text = translate_text.__dict__()["text"]
+    await message.channel.send(wrapText(translate_text))
+  if msg.startswith("$id-ja"):
+    input_msg = msg.split("$id-ja ")[1]
+    translator = Translator()  
+    translate_text = translator.translate(input_msg,src="id", dest='ja')
+    translate_text = translate_text.__dict__()["text"]
+    await message.channel.send(wrapText(translate_text))
+    
   if msg.startswith('$interpolLinier'):
     if "help" in msg:
       pesan = "Contoh Input:\n"
@@ -49,7 +68,7 @@ async def on_message(message):
       try:
         await message.channel.send(wrapText(linier(msg)))
       except:
-        await message.channel.send(wrapText(errorMsg))
+        await message.channel.send(embed=errorEmbed)
 
   if msg.startswith('$gaussJordan'):
     if "help" in msg:
@@ -71,9 +90,8 @@ async def on_message(message):
         pesan = stepGaussJordan(spl_konst,spl_hasil)
         await message.channel.send(wrapText(pesan))
       except:
-        await message.channel.send(wrapText(errorMsg))
+        await message.channel.send(embed=errorEmbed)
       
-
   if msg.startswith('$regLinier'):
     input_msg = msg.split("$regLinier ",1)[1].split(";")
     if(input_msg[0] == "help"):
@@ -87,7 +105,7 @@ async def on_message(message):
         await message.channel.send(wrapText(pesan))
         await message.channel.send(file=grafik)
       except:
-        await message.channel.send(wrapText(errorMsg))
+        await message.channel.send(embed=errorEmbed)
     
   if msg.startswith('$regKuadratik'):
     input_msg = msg.split("$regKuadratik ",1)[1].split(";")
@@ -102,7 +120,7 @@ async def on_message(message):
         await message.channel.send(wrapText(pesan))
         await message.channel.send(file=grafik)
       except:
-        await message.channel.send(wrapText(errorMsg))
+        await message.channel.send(embed=errorEmbed)
   
   if msg.startswith('$hummingCode'):
     input_msg = msg.split("$hummingCode ", 1)
@@ -114,7 +132,7 @@ async def on_message(message):
         pesan = humming_code(input_msg[1])
         await message.channel.send(wrapText(pesan))
       except:
-        await message.channel.send(wrapText(errorMsg))
+        await message.channel.send(embed=errorEmbed)        
     
 keep_alive()
 client.run(os.getenv('TOKEN'))
