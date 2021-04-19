@@ -45,6 +45,13 @@ async def on_message(message):
     embed.description = pesan
     embed.color = discord.Colour.red()
     await message.channel.send(embed=embed)
+  if  msg.startswith("$wangy"):
+    input_msg = msg.split("$wangy ")[1]
+    embed = discord.Embed()
+    embed.title = "❤️ ❤️ ❤️ Wangy Wangy "+input_msg+" Wangy ❤️ ❤️ ❤️"
+    embed.description = input_msg+"..........."+input_msg+" "+input_msg+" AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA ❤️ ❤️ ❤️ WANGI WANGI WANGI WANGI HU HA HU HA HU HA, aaaah baunya "+input_msg+" wangi aku mau nyiumin aroma wanginya "+input_msg+" AAAAAAAAH ~ Rambut.... aaah Rambut juga pengen aku endus-endus ~~~~ AAAAAH "+input_msg+" keluar pertama kali di light novel juga CANTIK BANGETTTT ❤️ ❤️ ❤️ wajah dia itu juga CANTIK BANGET AAAAAAAAH "+input_msg+" CANTIIIIIIIIIIIIIIIIIIIIIIIIIIIKKKKKKK............ ❤️ ❤️ ❤️ apa ? "+input_msg+" itu gak nyata ? Cuma karakter 2 dimensi katamu ? nggak, ngak ngak ngak ngak NGAAAAAAAAK GUA GAK PERCAYA ITU DIA NYATA NGAAAAAAAAAAAAAAAAAK PEDULI BANGSAAAAAT !! GUA GAK PEDULI SAMA KENYATAAN POKOKNYA GAK PEDULI. ❤️ ❤️ ❤️ "+input_msg+" ngeliat gw ... "+input_msg+" di hp bicara am gw "+input_msg+"... kamu percaya sama aku ? aaaaaaaaaaah syukur "+input_msg+" gak mau merelakan aku AAAAAAHHHH ❤️ ❤️ ❤️ YEAAAAAAAAAAAH GUA MASIH PUNYA "+input_msg+", SENDIRI PUN NGGAK MASALAH AAAAAAAAAAAAAAH C2C KIRIMKANLAH CINTAKU PADA  "+input_msg+"  KIRIMKAN KE IBUNYA AAAAAAAAH ❤️ ❤️ ❤️"
+    embed.color = discord.Colour.red() 
+    await message.channel.send(embed=embed)
   #Translator
   if msg.startswith("$ja-id"):
     input_msg = msg.split("$ja-id ")[1]
