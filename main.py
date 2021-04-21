@@ -5,9 +5,10 @@ from googletrans import Translator
 from functions import *
 from hummingCode import *
 from interpolasi import *
+from wangy import *
 from keep_alive import keep_alive
 client = discord.Client()
-version = "0.3.6v"
+version = "0.3.7v"
 errorMsg = "Ada error apa mbuh ga tau, ga ngurus.\nCek lagi input nya gan"
 errorEmbed = discord.Embed()
 errorEmbed.title = "!!! ERROR !!!"
@@ -27,14 +28,19 @@ async def on_message(message):
 
   if msg == '$help':
     pesan = ""
-    pesan += "Megumin Bot is bot to Calculate some stuff\n\n"
+    pesan += "Megumin Bot is bot to do some stuff\n\n"
     pesan += "**Prefix**\n$\n"
     pesan += "\n**Features**\n"
     pesan += "Regresi Linier - $regLinier\n"
     pesan += "Regresi Kuadratik - $regKuadratik\n"
     pesan += "Gauss Jordan - $gaussJordan\n"
-    pesan += "Interpol Linier - $interpolLinier\n\n"
+    pesan += "Interpol Linier - $interpolLinier\n"
     pesan += "Humming Code - $hummingCode\n\n"
+    pesan += "**Translate** (not perfectly working)\n"
+    pesan += "Japan-to-Indonesia - $ja-id\n"
+    pesan += "Indonesia-to-Indonesia - $id-ja\n\n"
+    pesan += "**Special**\n"
+    pesan += "Wangy Template - $wangy\n\n"
     pesan += "Type help after prefix to see Example input\n"
     pesan += "Ex: $regLinier help\n"
     pesan += "\nThe Weeb Behind This Bot:\n"
@@ -46,25 +52,45 @@ async def on_message(message):
     embed.color = discord.Colour.red()
     await message.channel.send(embed=embed)
   if  msg.startswith("$wangy"):
-    input_msg = msg.split("$wangy ")[1]
-    embed = discord.Embed()
-    embed.title = "❤️ ❤️ ❤️ Wangy Wangy "+input_msg+" Wangy ❤️ ❤️ ❤️"
-    embed.description = input_msg+"..........."+input_msg+" "+input_msg+" AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA ❤️ ❤️ ❤️ WANGI WANGI WANGI WANGI HU HA HU HA HU HA, aaaah baunya "+input_msg+" wangi aku mau nyiumin aroma wanginya "+input_msg+" AAAAAAAAH ~ Rambut.... aaah Rambut juga pengen aku endus-endus ~~~~ AAAAAH "+input_msg+" keluar pertama kali di light novel juga CANTIK BANGETTTT ❤️ ❤️ ❤️ wajah dia itu juga CANTIK BANGET AAAAAAAAH "+input_msg+" CANTIIIIIIIIIIIIIIIIIIIIIIIIIIIKKKKKKK............ ❤️ ❤️ ❤️ apa ? "+input_msg+" itu gak nyata ? Cuma karakter 2 dimensi katamu ? nggak, ngak ngak ngak ngak NGAAAAAAAAK GUA GAK PERCAYA ITU DIA NYATA NGAAAAAAAAAAAAAAAAAK PEDULI BANGSAAAAAT !! GUA GAK PEDULI SAMA KENYATAAN POKOKNYA GAK PEDULI. ❤️ ❤️ ❤️ "+input_msg+" ngeliat gw ... "+input_msg+" di hp bicara am gw "+input_msg+"... kamu percaya sama aku ? aaaaaaaaaaah syukur "+input_msg+" gak mau merelakan aku AAAAAAHHHH ❤️ ❤️ ❤️ YEAAAAAAAAAAAH GUA MASIH PUNYA "+input_msg+", SENDIRI PUN NGGAK MASALAH AAAAAAAAAAAAAAH C2C KIRIMKANLAH CINTAKU PADA  "+input_msg+"  KIRIMKAN KE IBUNYA AAAAAAAAH ❤️ ❤️ ❤️"
-    embed.color = discord.Colour.red() 
-    await message.channel.send(embed=embed)
+    if "help" in msg:
+      pesan = "Contoh Input:\n"
+      pesan += "$wangy Megumin"
+      await message.channel.send(wrapText(pesan))
+    else:
+      input_msg = msg.split("$wangy ")[1]
+      embed = discord.Embed()
+      param = input_msg.split(" ")
+      if len(param) > 1:
+        embed.title = "❤️ ❤️ ❤️ Wangy Wangy "+param[0]+" Wangy ❤️ ❤️ ❤️"
+        embed.description = panjang(input_msg)
+      else:
+        embed.title = "❤️ ❤️ ❤️ Wangy Wangy "+input_msg+" Wangy ❤️ ❤️ ❤️"
+        embed.description = singkat(input_msg)
+      embed.color = discord.Colour.red() 
+      await message.channel.send(embed=embed)
   #Translator
   if msg.startswith("$ja-id"):
-    input_msg = msg.split("$ja-id ")[1]
-    translator = Translator()  
-    translate_text = translator.translate(input_msg,src="ja", dest='id')
-    translate_text = translate_text.__dict__()["text"]
-    await message.channel.send(wrapText(translate_text))
+    if "help" in msg:
+      pesan = "Contoh Input:\n"
+      pesan += "$ja-id murasaki"
+      await message.channel.send(wrapText(pesan))
+    else:
+      input_msg = msg.split("$ja-id ")[1]
+      translator = Translator()  
+      translate_text = translator.translate(input_msg,src="ja", dest='id')
+      translate_text = translate_text.__dict__()["text"]
+      await message.channel.send(wrapText(translate_text))
   if msg.startswith("$id-ja"):
-    input_msg = msg.split("$id-ja ")[1]
-    translator = Translator()  
-    translate_text = translator.translate(input_msg,src="id", dest='ja')
-    translate_text = translate_text.__dict__()["text"]
-    await message.channel.send(wrapText(translate_text))
+    if "help" in msg:
+      pesan = "Contoh Input:\n"
+      pesan += "$ja-id ungu"
+      await message.channel.send(wrapText(pesan))
+    else:
+      input_msg = msg.split("$id-ja ")[1]
+      translator = Translator()  
+      translate_text = translator.translate(input_msg,src="id", dest='ja')
+      translate_text = translate_text.__dict__()["text"]
+      await message.channel.send(wrapText(translate_text))
     
   if msg.startswith('$interpolLinier'):
     if "help" in msg:
