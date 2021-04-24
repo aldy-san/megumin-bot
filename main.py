@@ -1,11 +1,13 @@
 import discord
 import os
 import random
+import youtube_dl
 from googletrans import Translator
 from functions import *
 from hummingCode import *
 from interpolasi import *
 from wangy import *
+from discord.ext import commands
 from keep_alive import keep_alive
 client = discord.Client()
 version = "0.3.7v"
@@ -14,12 +16,50 @@ errorEmbed = discord.Embed()
 errorEmbed.title = "!!! ERROR !!!"
 errorEmbed.description = errorMsg
 errorEmbed.color = discord.Colour.red()
+client = commands.Bot(command_prefix="$")
+#Music
+def is_connected(ctx):
+    voice_client = get(ctx.bot.voice_clients, guild=ctx.guild)
+    return voice_client and voice_client.is_connected()
+@client.command()
+async def play(ctx):
+    song_there = os.path.isfile("song.mp3")
+    voiceChannel = ctx.author.voice.channel
+    voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
+    if voice == None:
+      await voiceChannel.connect()
+      voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
+    else:
+      await voice.move_to(voiceChannel)
+
+    voice.play(discord.FFmpegPCMAudio("audio/blok.mp3"))
+    # ydl_opts = {
+    #     'format': 'bestaudio/best',
+    #     'postprocessors': [{
+    #         'key': 'FFmpegExtractAudio',
+    #         'preferredcodec': 'mp3',
+    #         'preferredquality': '192',
+    #     }],
+    # }
+    # with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+    #     ydl.download([url])
+    # for file in os.listdir("./"):
+    #     if file.endswith(".mp3"):
+    #         os.rename(file, "song.mp3")
+@client.command()
+async def leave(ctx):
+    voice = ctx.voice_client
+    if voice is None:
+        return await ctx.send("Bot is not in a voice channel") 
+    await voice.disconnect()
+
 @client.event
 async def on_ready():
   print('We have logged in as {0.user}'.format(client))
   await client.change_presence(activity=discord.Game(name="$help | Megumin "+version))
 @client.event
 async def on_message(message):
+  await client.process_commands(message)
   if message.author == client.user:
     return
   msg = message.content
