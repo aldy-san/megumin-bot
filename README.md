@@ -1,4 +1,4 @@
-# Megumin 0.3.5v
+# Megumin 0.3.7v
 Megumin Bot is bot to Calculate some stuff
 
 ## Prefix
