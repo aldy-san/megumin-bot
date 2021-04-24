@@ -260,6 +260,17 @@ version = "1.20.2"
 
 [[package]]
 category = "main"
+description = "Retrieve YouTube content and metadata"
+name = "pafy"
+optional = false
+python-versions = "*"
+version = "0.5.5"
+
+[package.extras]
+youtube-dl-backend = ["youtube-dl"]
+
+[[package]]
+category = "main"
 description = "Powerful data structures for data analysis, time series, and statistics"
 name = "pandas"
 optional = false
@@ -385,7 +396,7 @@ python-versions = "*"
 version = "2021.4.17"
 
 [metadata]
-content-hash = "bdfbd98bbacc9a2bbf473b02de992818a9d7e020cd198b9ba56d15eff8045a62"
+content-hash = "2725add0680e4982e5f0a6e23aee866a569a491289b29f93b2134d2f3acd51f0"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -660,6 +671,10 @@ numpy = [
     {file = "numpy-1.20.2-cp39-cp39-win_amd64.whl", hash = "sha256:924dc3f83de20437de95a73516f36e09918e9c9c18d5eac520062c49191025fb"},
     {file = "numpy-1.20.2-pp37-pypy37_pp73-manylinux2010_x86_64.whl", hash = "sha256:97ce8b8ace7d3b9288d88177e66ee75480fb79b9cf745e91ecfe65d91a856042"},
     {file = "numpy-1.20.2.zip", hash = "sha256:878922bf5ad7550aa044aa9301d417e2d3ae50f0f577de92051d739ac6096cee"},
+]
+pafy = [
+    {file = "pafy-0.5.5-py2.py3-none-any.whl", hash = "sha256:769e35aa6988686d47fa2ab235d15c9952c7873c470f6a6b05cf6bcd93e62515"},
+    {file = "pafy-0.5.5.tar.gz", hash = "sha256:364f1d1312c89582d97dc7225cf6858cde27cb11dfd64a9c2bab1a2f32133b1e"},
 ]
 pandas = [
     {file = "pandas-1.2.4-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:c601c6fdebc729df4438ec1f62275d6136a0dd14d332fc0e8ce3f7d2aadb4dd6"},

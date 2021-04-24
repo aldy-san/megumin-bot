@@ -1,7 +1,8 @@
 import discord
 import os
 import random
-import youtube_dl
+import pafy
+import urllib.request
 from googletrans import Translator
 from functions import *
 from hummingCode import *
@@ -18,11 +19,12 @@ errorEmbed.description = errorMsg
 errorEmbed.color = discord.Colour.red()
 client = commands.Bot(command_prefix="$")
 #Music
+FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5','options': '-vn'}
 def is_connected(ctx):
     voice_client = get(ctx.bot.voice_clients, guild=ctx.guild)
     return voice_client and voice_client.is_connected()
 @client.command()
-async def play(ctx):
+async def play(ctx, arg):
     song_there = os.path.isfile("song.mp3")
     voiceChannel = ctx.author.voice.channel
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
@@ -31,21 +33,13 @@ async def play(ctx):
       voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     else:
       await voice.move_to(voiceChannel)
-
-    voice.play(discord.FFmpegPCMAudio("audio/blok.mp3"))
-    # ydl_opts = {
-    #     'format': 'bestaudio/best',
-    #     'postprocessors': [{
-    #         'key': 'FFmpegExtractAudio',
-    #         'preferredcodec': 'mp3',
-    #         'preferredquality': '192',
-    #     }],
-    # }
-    # with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-    #     ydl.download([url])
-    # for file in os.listdir("./"):
-    #     if file.endswith(".mp3"):
-    #         os.rename(file, "song.mp3")
+    if arg == "blok":
+      voice.play(discord.FFmpegPCMAudio("audio/blok.mp3"))
+    else:
+      song = pafy.new(arg)  
+      audio = song.getbestaudio() 
+      voice.play(discord.FFmpegPCMAudio(audio.url, **FFMPEG_OPTIONS)) 
+      
 @client.command()
 async def leave(ctx):
     voice = ctx.voice_client
