@@ -1,5 +1,4 @@
 def linier(msg):
-  msg = msg.split("$interpolLinier ")[1].strip()
   if msg[0] == "x":
       findX = False
       titik = float(msg.split("x=")[1][0])
