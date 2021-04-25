@@ -82,6 +82,19 @@ async def wangy(ctx, *arg):
     await ctx.send(embed=embed)
 
 #MUSIC
+song_queue = []
+def play_next(ctx):
+  voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
+  if len(song_queue) > 1:
+      del song_queue[0]
+      song = pafy.new(song_queue[0]) 
+      audio = song.getbestaudio()
+      voice.stop()
+      voice.play(discord.FFmpegPCMAudio(audio.url, **FFMPEG_OPTIONS), after=lambda x=None: play_next(ctx))
+      voice.is_playing()
+@client.command()
+async def next(ctx):
+  play_next(ctx)
 @client.command()
 async def play(ctx, *arg):
   voiceChannel = ctx.author.voice.channel
@@ -96,18 +109,28 @@ async def play(ctx, *arg):
   else:
     arg = '+'.join(arg)
     if validators.url(arg):
-      song = pafy.new(arg)  
-      audio = song.getbestaudio() 
-      voice.play(discord.FFmpegPCMAudio(audio.url, **FFMPEG_OPTIONS))
+      song_queue.append(arg)
+      if not voice.is_playing():
+        song = pafy.new(arg)  
+        audio = song.getbestaudio() 
+        voice.play(discord.FFmpegPCMAudio(audio.url, **FFMPEG_OPTIONS), after=lambda x=None: play_next(ctx))
+        voice.is_playing()
+      else:
+          await ctx.send("Added to queue")
     else:
       search = arg
       html = urllib.request.urlopen("https://www.youtube.com/results?search_query=" + search)
-      print(html)
       video_ids = re.findall(r"watch\?v=(\S{11})", html.read().decode())
       await ctx.send("https://www.youtube.com/watch?v=" + video_ids[0])
-      song = pafy.new(video_ids[0])  
-      audio = song.getbestaudio() 
-      voice.play(discord.FFmpegPCMAudio(audio.url, **FFMPEG_OPTIONS))
+      song_queue.append(video_ids[0])
+      if not voice.is_playing():
+        song = pafy.new(video_ids[0]) 
+        audio = song.getbestaudio()
+        voice.play(discord.FFmpegPCMAudio(audio.url, **FFMPEG_OPTIONS), after=lambda x=None: play_next(ctx))
+        voice.is_playing()
+      else:
+          await ctx.send("Added to queue")
+      
 @client.command()
 async def stop(ctx):
   voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
