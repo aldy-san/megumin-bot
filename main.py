@@ -257,8 +257,8 @@ async def regLinier(ctx, *arg):
   msg = ' '.join(arg)
   input_msg = msg.split(";")
   if(input_msg[0] == "help"):
-    pesan = "Contoh Input = $regLinier 1 2 3 4 5;1.0 2.0 3.0 4.0 5.0"
-    pesan = "\nor\nContoh Input = $rl 1 2 3 4 5;1.0 2.0 3.0 4.0 5.0"
+    pesan = "Contoh Input:\n $regLinier 1 2 3 4 5;1.0 2.0 3.0 4.0 5.0"
+    pesan += "\nor\n$rl 1 2 3 4 5;1.0 2.0 3.0 4.0 5.0"
     await ctx.send(wrapText(pesan))
   else:
     try:
@@ -274,8 +274,8 @@ async def regKuadratik(ctx, *arg):
   msg = ' '.join(arg)
   input_msg = msg.split(";")
   if(input_msg[0] == "help"):
-    pesan = "Contoh Input = $regKuadratik 1 2 3 4 5;1.0 2.0 3.0 4.0 5.0"
-    pesan = "\nor\nContoh Input = $rk 1 2 3 4 5;1.0 2.0 3.0 4.0 5.0"
+    pesan = "Contoh Input: \n$regKuadratik 1 2 3 4 5;1.0 2.0 3.0 4.0 5.0"
+    pesan += "\nor\n$rk 1 2 3 4 5;1.0 2.0 3.0 4.0 5.0"
     await ctx.send(wrapText(pesan))
   else:
     try:
@@ -329,7 +329,7 @@ async def hummingCode(ctx, *arg):
   input_msg = msg
   if(input_msg[1] == 'help'):
     pesan = "Contoh Input:\n $hummingCode 01010011 00110001 00100000 01010100 01001001"
-    pesan = "\nor\n$hc 01010011 00110001 00100000 01010100 01001001"
+    pesan += "\nor\n$hc 01010011 00110001 00100000 01010100 01001001"
     await ctx.send(wrapText(pesan))
   else:
     try:
