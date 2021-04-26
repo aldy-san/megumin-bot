@@ -5,6 +5,9 @@ import re
 import pafy
 import urllib.request
 import validators
+import json
+import urllib
+
 from googletrans import Translator
 from functions import *
 from hummingCode import *
@@ -14,7 +17,7 @@ from discord.ext import commands
 from keep_alive import keep_alive
 
 client = discord.Client()
-version = "0.3.7v"
+version = "0.4.0v"
 errorMsg = "Ada error apa mbuh ga tau, ga ngurus.\nCek lagi input nya gan"
 errorEmbed = discord.Embed()
 errorEmbed.title = "!!! ERROR !!!"
@@ -36,7 +39,19 @@ async def help(ctx):
   pesan = ""
   pesan += "Megumin Bot is bot to do some stuff\n\n"
   pesan += "**Prefix**\n$\n"
-  pesan += "\n**Features**\n"
+  pesan += "\n**Commands**\n"
+  pesan += "Leave Channel - $leave\n"
+  pesan += "\n**Music**\n"
+  pesan += "Play music - $play\n"
+  pesan += "Stop music- $stop\n"
+  pesan += "Skip current song- $next\n"
+  pesan += "Check queue- $queue\n"
+  pesan += "Remove song from queue- $remove\n"
+  pesan += "\n**Special Sound**\n"
+  pesan += "$play blok\n"
+  pesan += "$play badumtss\n"
+  pesan += "$play bangsat\n"
+  pesan += "\n**Calculate**\n"
   pesan += "Regresi Linier - $regLinier\n"
   pesan += "Regresi Kuadratik - $regKuadratik\n"
   pesan += "Gauss Jordan - $gaussJordan\n"
@@ -92,6 +107,9 @@ def play_next(ctx):
       voice.stop()
       voice.play(discord.FFmpegPCMAudio(audio.url, **FFMPEG_OPTIONS), after=lambda x=None: play_next(ctx))
       voice.is_playing()
+  else:
+    del song_queue[0]
+    voice.stop()
 @client.command()
 async def next(ctx):
   play_next(ctx)
@@ -106,6 +124,10 @@ async def play(ctx, *arg):
     await voice.move_to(voiceChannel)
   if arg[0] == "blok":
     voice.play(discord.FFmpegPCMAudio("audio/blok.mp3"))
+  elif arg[0] == "badumtss":
+    voice.play(discord.FFmpegPCMAudio("audio/badumtss.mp3"))
+  elif arg[0] == "bangsat":
+    voice.play(discord.FFmpegPCMAudio("audio/bangsat.mp3"))
   else:
     arg = '+'.join(arg)
     if validators.url(arg):
@@ -121,26 +143,52 @@ async def play(ctx, *arg):
       search = arg
       html = urllib.request.urlopen("https://www.youtube.com/results?search_query=" + search)
       video_ids = re.findall(r"watch\?v=(\S{11})", html.read().decode())
-      await ctx.send("https://www.youtube.com/watch?v=" + video_ids[0])
-      song_queue.append(video_ids[0])
+      song_url = "https://www.youtube.com/watch?v=" + video_ids[0]
+      
+      await ctx.send(song_url)
+      song_queue.append(song_url)
       if not voice.is_playing():
-        song = pafy.new(video_ids[0]) 
+        song = pafy.new(song_url) 
         audio = song.getbestaudio()
         voice.play(discord.FFmpegPCMAudio(audio.url, **FFMPEG_OPTIONS), after=lambda x=None: play_next(ctx))
         voice.is_playing()
       else:
           await ctx.send("Added to queue")
-      
+@client.command()
+async def queue(ctx):
+  queue = ""
+  embed = discord.Embed()
+  embed.title = "QUEUE"
+  for idx, x in enumerate(song_queue):
+    params = {"format": "json", "url": x}
+    url = "https://www.youtube.com/oembed"
+    query_string = urllib.parse.urlencode(params)
+    url = url + "?" + query_string
+    with urllib.request.urlopen(url) as response:
+        response_text = response.read()
+        data = json.loads(response_text.decode())
+        queue += f"[{idx+1}. {data['title']}]({x})\n"
+  embed.description = queue
+  await ctx.send(embed=embed)    
 @client.command()
 async def stop(ctx):
   voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
   voice.stop()
 @client.command()
+async def remove(ctx, arg):
+  song_idx = int(arg) - 1
+  if(song_idx == 0):
+    play_next(ctx)
+  else:
+    song_queue.pop(song_idx)
+    await ctx.send("Successfully remove song")
+@client.command()
 async def leave(ctx):
   voice = ctx.voice_client
   if voice is None:
-      return await ctx.send("Bot is not in a voice channel") 
-  await voice.disconnect()
+      return await ctx.send("Bot is not in a voice channel")
+  else:
+    await voice.disconnect()
 
 #TRANSLATE
 @client.command()
