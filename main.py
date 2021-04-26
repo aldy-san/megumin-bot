@@ -45,30 +45,30 @@ async def on_ready():
 def is_connected(ctx):
   voice_client = get(ctx.bot.voice_clients, guild=ctx.guild)
   return voice_client and voice_client.is_connected()
-@client.command()
+@client.command(name='help', aliases=['h'])
 async def help(ctx):
   pesan = ""
   pesan += "Megumin Bot is bot to do some stuff\n\n"
   pesan += "**Prefix**\n$\n"
   pesan += "\n**Commands**\n"
-  pesan += "Leave Channel - $leave\n"
+  pesan += "Leave Channel - $leave/$l\n"
   pesan += "\n**Music**\n"
-  pesan += "Play music - $play\n"
-  pesan += "Stop music- $stop\n"
-  pesan += "Skip current song- $next\n"
-  pesan += "Check queue- $queue\n"
-  pesan += "Clear queue- $clear\n"
-  pesan += "Remove song from queue- $remove\n"
+  pesan += "Play music - $play/$p\n"
+  pesan += "Stop music- $stop/$s\n"
+  pesan += "Skip current song- $next/$n\n"
+  pesan += "Check queue- $queue/$q\n"
+  pesan += "Clear queue- $clear/$cl\n"
+  pesan += "Remove song from queue- $remove/$r\n"
   pesan += "\n**Special Sound**\n"
   pesan += "$play blok\n"
   pesan += "$play badumtss\n"
   pesan += "$play bangsat\n"
   pesan += "\n**Calculate**\n"
-  pesan += "Regresi Linier - $regLinier\n"
-  pesan += "Regresi Kuadratik - $regKuadratik\n"
-  pesan += "Gauss Jordan - $gaussJordan\n"
-  pesan += "Interpol Linier - $interpolLinier\n"
-  pesan += "Humming Code - $hummingCode\n\n"
+  pesan += "Regresi Linier - $regLinier/$rl\n"
+  pesan += "Regresi Kuadratik - $regKuadratik/$rk\n"
+  pesan += "Gauss Jordan - $gaussJordan/$gj\n"
+  pesan += "Interpol Linier - $interpolLinier/$il\n"
+  pesan += "Humming Code - $hummingCode/$hc\n\n"
   pesan += "**Translate** (not perfectly working)\n"
   pesan += "Japan-to-Indonesia - $ja_id\n"
   pesan += "Indonesia-to-Japan - $id_ja\n\n"
@@ -121,15 +121,16 @@ def play_next(ctx):
   else:
     #del song_queue[0]
     voice.stop()
-@client.command()
+@client.command(name='next', aliases=['n'])
 async def next(ctx):
   voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
-  voice.stop()
   embed = discord.Embed()
   embed.title = "Now Playing"
-  embed.description = getTitle(song_queue[0])
+  embed.description = getTitle(song_queue[1])
+  embed.color = discord.Colour.red() 
+  voice.stop()
   await ctx.send(embed=embed)
-@client.command()
+@client.command(name='play', aliases=['p'])
 async def play(ctx, *arg):
   voiceChannel = ctx.author.voice.channel
   voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
@@ -146,9 +147,10 @@ async def play(ctx, *arg):
     voice.play(discord.FFmpegPCMAudio("audio/bangsat.mp3"))
   else:
     embed = discord.Embed()
+    embed.color = discord.Colour.red() 
     arg = '+'.join(arg)
     if validators.url(arg):
-      embed.description = getTitle(song_url)
+      embed.description = getTitle(arg)
       song_queue.append(arg)
       if not voice.is_playing():
         song = pafy.new(arg)  
@@ -177,10 +179,11 @@ async def play(ctx, *arg):
       else:
         embed.title = "Added to queue"
         await ctx.send(embed=embed)
-@client.command()
+@client.command(name='queue', aliases=['q'])
 async def queue(ctx):
   queue = ""
   embed = discord.Embed()
+  embed.color = discord.Colour.red() 
   if len(song_queue)==0:
     embed.title = "The Queue is Empty"
   else:
@@ -196,11 +199,11 @@ async def queue(ctx):
         queue += f"[{idx+1}. {(data['title'][:40] + '..') if len(data['title']) > 40 else data['title']}]({x})\n"
   embed.description = queue
   await ctx.send(embed=embed)    
-@client.command()
+@client.command(name='stop', aliases=['s'])
 async def stop(ctx):
   voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
   voice.stop()
-@client.command()
+@client.command(name='remove', aliases=['r'])
 async def remove(ctx, arg):
   song_idx = int(arg) - 1
   if(song_idx == 0):
@@ -208,18 +211,19 @@ async def remove(ctx, arg):
   else:
     song_queue.pop(song_idx)
     await ctx.send("Successfully remove song")
-@client.command()
+@client.command(name='leave', aliases=['l'])
 async def leave(ctx):
   voice = ctx.voice_client
   if voice is None:
       return await ctx.send("Bot is not in a voice channel")
   else:
     await voice.disconnect()
-@client.command()
+@client.command(name='clear', aliases=['cl'])
 async def clear(ctx):
   del song_queue[:]
   voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
   voice.stop()
+  await ctx.send("Successfully clear queue")
   
 #TRANSLATE
 @client.command()
@@ -248,12 +252,13 @@ async def id_ja(ctx, *arg):
     await ctx.send(wrapText(translate_text))
 
 #KONUM & KDJK
-@client.command()
+@client.command(name='regLinier', aliases=['rl'])
 async def regLinier(ctx, *arg):
   msg = ' '.join(arg)
   input_msg = msg.split(";")
   if(input_msg[0] == "help"):
     pesan = "Contoh Input = $regLinier 1 2 3 4 5;1.0 2.0 3.0 4.0 5.0"
+    pesan = "\nor\nContoh Input = $rl 1 2 3 4 5;1.0 2.0 3.0 4.0 5.0"
     await ctx.send(wrapText(pesan))
   else:
     try:
@@ -264,12 +269,13 @@ async def regLinier(ctx, *arg):
       await ctx.send(file=grafik)
     except:
       await ctx.send(embed=errorEmbed)
-@client.command()
+@client.command(name='regKuadratik', aliases=['rk'])
 async def regKuadratik(ctx, *arg):
   msg = ' '.join(arg)
   input_msg = msg.split(";")
   if(input_msg[0] == "help"):
     pesan = "Contoh Input = $regKuadratik 1 2 3 4 5;1.0 2.0 3.0 4.0 5.0"
+    pesan = "\nor\nContoh Input = $rk 1 2 3 4 5;1.0 2.0 3.0 4.0 5.0"
     await ctx.send(wrapText(pesan))
   else:
     try:
@@ -280,13 +286,13 @@ async def regKuadratik(ctx, *arg):
       await ctx.send(file=grafik)
     except:
       await ctx.send(embed=errorEmbed)
-@client.command()
+@client.command(name='gaussJordan', aliases=['gj'])
 async def gaussJordan(ctx, *arg):
   msg = ' '.join(arg)
-  await ctx.send(msg)
   if "help" in msg:
     pesan = "Contoh Input:\n"
     pesan += "$gaussJordan\n1, 9, 0;\n3, 5, 6;\n6, 0, 4;\nand\n6, 0, 4"
+    pesan += "\nor\n$gj\n1, 9, 0;\n3, 5, 6;\n6, 0, 4;\nand\n6, 0, 4"
     await ctx.send(wrapText(pesan))
   else:
     try:
@@ -304,24 +310,26 @@ async def gaussJordan(ctx, *arg):
       await ctx.send(wrapText(pesan))
     except:
       await ctx.send(embed=errorEmbed)
-@client.command()
+@client.command(name='interpolLinier', aliases=['il'])
 async def interpolLinier(ctx, *arg):
   msg = ' '.join(arg)
   if "help" in msg:
     pesan = "Contoh Input:\n"
     pesan += "$interpolLinier y=2 titik_1=1,5 titik_2=4,2"
+    pesan += "\nor\n$il y=2 titik_1=1,5 titik_2=4,2"
     await ctx.send(wrapText(pesan))
   else:
     try:
       await ctx.send(wrapText(linier(msg)))
     except:
       await ctx.send(embed=errorEmbed)
-@client.command()
+@client.command(name='hummingCode', aliases=['hc'])
 async def hummingCode(ctx, *arg):
   msg = ' '.join(arg)
   input_msg = msg
   if(input_msg[1] == 'help'):
-    pesan = "Contoh Input = $hummingCode 01010011 00110001 00100000 01010100 01001001"
+    pesan = "Contoh Input:\n $hummingCode 01010011 00110001 00100000 01010100 01001001"
+    pesan = "\nor\n$hc 01010011 00110001 00100000 01010100 01001001"
     await ctx.send(wrapText(pesan))
   else:
     try:
