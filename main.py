@@ -25,6 +25,17 @@ errorEmbed.description = errorMsg
 errorEmbed.color = discord.Colour.red()
 client = commands.Bot(command_prefix="$")
 #Music
+def getTitle(song_url):
+  title = ""
+  params = {"format": "json", "url": song_url}
+  url = "https://www.youtube.com/oembed"
+  query_string = urllib.parse.urlencode(params)
+  url = url + "?" + query_string
+  with urllib.request.urlopen(url) as response:
+      response_text = response.read()
+      data = json.loads(response_text.decode())
+      title += f"[{data['title']}]({song_url})\n"
+  return title
 FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5','options': '-vn'}
 client.remove_command('help')
 @client.event
@@ -46,6 +57,7 @@ async def help(ctx):
   pesan += "Stop music- $stop\n"
   pesan += "Skip current song- $next\n"
   pesan += "Check queue- $queue\n"
+  pesan += "Clear queue- $clear\n"
   pesan += "Remove song from queue- $remove\n"
   pesan += "\n**Special Sound**\n"
   pesan += "$play blok\n"
@@ -104,15 +116,19 @@ def play_next(ctx):
       del song_queue[0]
       song = pafy.new(song_queue[0]) 
       audio = song.getbestaudio()
-      voice.stop()
       voice.play(discord.FFmpegPCMAudio(audio.url, **FFMPEG_OPTIONS), after=lambda x=None: play_next(ctx))
       voice.is_playing()
   else:
-    del song_queue[0]
+    #del song_queue[0]
     voice.stop()
 @client.command()
 async def next(ctx):
-  play_next(ctx)
+  voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
+  voice.stop()
+  embed = discord.Embed()
+  embed.title = "Now Playing"
+  embed.description = getTitle(song_queue[0])
+  await ctx.send(embed=embed)
 @client.command()
 async def play(ctx, *arg):
   voiceChannel = ctx.author.voice.channel
@@ -129,36 +145,46 @@ async def play(ctx, *arg):
   elif arg[0] == "bangsat":
     voice.play(discord.FFmpegPCMAudio("audio/bangsat.mp3"))
   else:
+    embed = discord.Embed()
     arg = '+'.join(arg)
     if validators.url(arg):
+      embed.description = getTitle(song_url)
       song_queue.append(arg)
       if not voice.is_playing():
         song = pafy.new(arg)  
         audio = song.getbestaudio() 
         voice.play(discord.FFmpegPCMAudio(audio.url, **FFMPEG_OPTIONS), after=lambda x=None: play_next(ctx))
         voice.is_playing()
+        embed.title = "Now Playing"
+        await ctx.send(embed=embed)
       else:
-          await ctx.send("Added to queue")
+        embed.title = "Added to queue"
+        await ctx.send(embed=embed)
     else:
       search = arg
       html = urllib.request.urlopen("https://www.youtube.com/results?search_query=" + search)
       video_ids = re.findall(r"watch\?v=(\S{11})", html.read().decode())
       song_url = "https://www.youtube.com/watch?v=" + video_ids[0]
-      
-      await ctx.send(song_url)
+      embed.description = getTitle(song_url)
       song_queue.append(song_url)
       if not voice.is_playing():
         song = pafy.new(song_url) 
         audio = song.getbestaudio()
         voice.play(discord.FFmpegPCMAudio(audio.url, **FFMPEG_OPTIONS), after=lambda x=None: play_next(ctx))
         voice.is_playing()
+        embed.title = "Now Playing"
+        await ctx.send(embed=embed)
       else:
-          await ctx.send("Added to queue")
+        embed.title = "Added to queue"
+        await ctx.send(embed=embed)
 @client.command()
 async def queue(ctx):
   queue = ""
   embed = discord.Embed()
-  embed.title = "QUEUE"
+  if len(song_queue)==0:
+    embed.title = "The Queue is Empty"
+  else:
+    embed.title = "QUEUE"
   for idx, x in enumerate(song_queue):
     params = {"format": "json", "url": x}
     url = "https://www.youtube.com/oembed"
@@ -167,7 +193,7 @@ async def queue(ctx):
     with urllib.request.urlopen(url) as response:
         response_text = response.read()
         data = json.loads(response_text.decode())
-        queue += f"[{idx+1}. {data['title']}]({x})\n"
+        queue += f"[{idx+1}. {(data['title'][:40] + '..') if len(data['title']) > 40 else data['title']}]({x})\n"
   embed.description = queue
   await ctx.send(embed=embed)    
 @client.command()
@@ -189,7 +215,12 @@ async def leave(ctx):
       return await ctx.send("Bot is not in a voice channel")
   else:
     await voice.disconnect()
-
+@client.command()
+async def clear(ctx):
+  del song_queue[:]
+  voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
+  voice.stop()
+  
 #TRANSLATE
 @client.command()
 async def ja_id(ctx, *arg):
@@ -215,6 +246,7 @@ async def id_ja(ctx, *arg):
     translate_text = translator.translate(msg,src="id", dest='ja')
     translate_text = translate_text.__dict__()["text"]
     await ctx.send(wrapText(translate_text))
+
 #KONUM & KDJK
 @client.command()
 async def regLinier(ctx, *arg):
