@@ -7,8 +7,19 @@ subsNum = {
     1: "₁",
     2: "₂",
     3: "₃",
-    4: "₄"
+    4: "₄",
+    5: "₅",
+    6: "₆",
+    7: "₇",
+    8: "₈",
+    9: "₉"
   }
+def struct_to_second(dur):
+  total = 0
+  total += dur.tm_sec
+  total += dur.tm_min*60
+  total += dur.tm_hour*3600
+  return total
 def wrapText(pesan):
   temp ="```"
   temp += pesan
@@ -68,7 +79,7 @@ def stepGaussJordan(spl_konst, spl_hasil):
               elif (j == kolom - 1):
                   output += f"{round(matrix_spl[i][j], 3):g}"
                   if (i != x):
-                      output += f"  => B{subsNum[i+1]} - ({round(matrix_spl[i][x], 3):g})*B{subsNum[x+1]}"
+                    output += f"  => B{subsNum[i+1]} - ({round(matrix_spl[i][x], 3):g})*B{subsNum[x+1]}"
               else:
                   output += f"{round(matrix_spl[i][j], 3):g}a{subsNum[j]} + "
           output += "\n"

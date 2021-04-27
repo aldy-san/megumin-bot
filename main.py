@@ -7,7 +7,9 @@ import urllib.request
 import validators
 import json
 import urllib
+import time
 
+from datetime import datetime
 from googletrans import Translator
 from functions import *
 from hummingCode import *
@@ -109,23 +111,49 @@ async def wangy(ctx, *arg):
     await ctx.send(embed=embed)
 
 #MUSIC
+start = datetime.now()
 song_queue = []
+duration_queue=[]
 def play_next(ctx):
   voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
   if len(song_queue) > 1:
       del song_queue[0]
+      del duration_queue[0]
       song = pafy.new(song_queue[0]) 
       audio = song.getbestaudio()
+      global start
+      start = datetime.now()
       voice.play(discord.FFmpegPCMAudio(audio.url, **FFMPEG_OPTIONS), after=lambda x=None: play_next(ctx))
       voice.is_playing()
   else:
-    #del song_queue[0]
+    del song_queue[0]
+    del duration_queue[0]
     voice.stop()
+@client.command(name='nowPlaying', aliases=['np'])
+async def nowPlaying(ctx):
+  embed = discord.Embed()
+  embed.color = discord.Colour.red() 
+  if len(song_queue) >= 1:
+    embed.title = "Now Playing"
+    pesan = getTitle(song_queue[0]) + "\n"
+    current = datetime.now() - start
+    dur = time.strptime(duration_queue[0], '%H:%M:%S')
+    percent = round((current.seconds/struct_to_second(dur))*20)
+    for x in range(20):
+      if x == percent:
+        pesan += "🔴"
+      else:
+        pesan += "▬"
+    pesan += str(current)[:7]+"/"+duration_queue[0]
+    embed.description = pesan
+  else:
+    embed.title = "No Song is Played"
+  await ctx.send(embed=embed)
 @client.command(name='next', aliases=['n'])
 async def next(ctx):
   voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
   embed = discord.Embed()
-  embed.title = "Now Playing"
+  embed.title = "Playing"
   embed.description = getTitle(song_queue[1])
   embed.color = discord.Colour.red() 
   voice.stop()
@@ -152,16 +180,13 @@ async def play(ctx, *arg):
     if validators.url(arg):
       embed.description = getTitle(arg)
       song_queue.append(arg)
+      embed.title = "Added to queue"
       if not voice.is_playing():
         song = pafy.new(arg)  
         audio = song.getbestaudio() 
         voice.play(discord.FFmpegPCMAudio(audio.url, **FFMPEG_OPTIONS), after=lambda x=None: play_next(ctx))
         voice.is_playing()
-        embed.title = "Now Playing"
-        await ctx.send(embed=embed)
-      else:
-        embed.title = "Added to queue"
-        await ctx.send(embed=embed)
+      await ctx.send(embed=embed)
     else:
       search = arg
       html = urllib.request.urlopen("https://www.youtube.com/results?search_query=" + search)
@@ -169,16 +194,18 @@ async def play(ctx, *arg):
       song_url = "https://www.youtube.com/watch?v=" + video_ids[0]
       embed.description = getTitle(song_url)
       song_queue.append(song_url)
+      embed.title = "Added to queue"
+      global start
+      start = datetime.now()
+      song = pafy.new(song_url)
+      duration_queue.append(song.duration)
       if not voice.is_playing():
-        song = pafy.new(song_url) 
         audio = song.getbestaudio()
         voice.play(discord.FFmpegPCMAudio(audio.url, **FFMPEG_OPTIONS), after=lambda x=None: play_next(ctx))
         voice.is_playing()
-        embed.title = "Now Playing"
-        await ctx.send(embed=embed)
-      else:
-        embed.title = "Added to queue"
-        await ctx.send(embed=embed)
+      await ctx.send(embed=embed)
+
+      
 @client.command(name='queue', aliases=['q'])
 async def queue(ctx):
   queue = ""
@@ -209,6 +236,7 @@ async def remove(ctx, arg):
   if(song_idx == 0):
     play_next(ctx)
   else:
+    duration_queue.pop(song_queue.index(song_idx))
     song_queue.pop(song_idx)
     await ctx.send("Successfully remove song")
 @client.command(name='leave', aliases=['l'])
@@ -295,7 +323,7 @@ async def gaussJordan(ctx, *arg):
     pesan += "\nor\n$gj\n1, 9, 0;\n3, 5, 6;\n6, 0, 4;\nand\n6, 0, 4"
     await ctx.send(wrapText(pesan))
   else:
-    try:
+    # try:
       input_msg = msg
       spl_konst = input_msg.split("and ")[0].split("; ")
       spl_hasil = input_msg.split("and ")[1].split(", ")
@@ -308,8 +336,8 @@ async def gaussJordan(ctx, *arg):
       spl_hasil = np.array([[float(x) for x in spl_hasil]])
       pesan = stepGaussJordan(spl_konst,spl_hasil)
       await ctx.send(wrapText(pesan))
-    except:
-      await ctx.send(embed=errorEmbed)
+    # except:
+      # await ctx.send(embed=errorEmbed)
 @client.command(name='interpolLinier', aliases=['il'])
 async def interpolLinier(ctx, *arg):
   msg = ' '.join(arg)
