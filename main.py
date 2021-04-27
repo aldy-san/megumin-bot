@@ -60,6 +60,7 @@ async def help(ctx):
   pesan += "Skip current song- $next/$n\n"
   pesan += "Check queue- $queue/$q\n"
   pesan += "Clear queue- $clear/$cl\n"
+  pesan += "Check current playing song - $np\n"
   pesan += "Remove song from queue- $remove/$r\n"
   pesan += "\n**Special Sound**\n"
   pesan += "$play blok\n"
@@ -136,6 +137,7 @@ async def nowPlaying(ctx):
   if len(song_queue) >= 1:
     embed.title = "Now Playing"
     pesan = getTitle(song_queue[0]) + "\n"
+    global start
     current = datetime.now() - start
     dur = time.strptime(duration_queue[0], '%H:%M:%S')
     percent = round((current.seconds/struct_to_second(dur))*20)
@@ -249,6 +251,7 @@ async def leave(ctx):
 @client.command(name='clear', aliases=['cl'])
 async def clear(ctx):
   del song_queue[:]
+  del duration_queue[:]
   voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
   voice.stop()
   await ctx.send("Successfully clear queue")
