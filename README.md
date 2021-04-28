@@ -1,12 +1,12 @@
 # 💥Megumin 0.4.0v💥
 Megumin Bot is bot to Calculate some stuff
 
-## Commands
-* Leave Channel - $leave/$l
-
 ## Prefix
 $
 
+## Commands
+* Leave Channel - $leave/$l
+* 
 ## Music
 * Play music - $p
 * Stop music- $s
