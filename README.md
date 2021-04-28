@@ -6,7 +6,7 @@ $
 
 ## Commands
 * Leave Channel - $leave/$l
-* 
+
 ## Music
 * Play music - $p
 * Stop music- $s
@@ -15,7 +15,7 @@ $
 * Clear queue- $cl
 * Check current playing song - $np
 * Remove song from queue- $r
-* 
+
 ## Features
 * Regresi Linier - $regLinier 
 * Regresi Kuadratik - $regKuadratik 
