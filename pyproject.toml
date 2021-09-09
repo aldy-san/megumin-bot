@@ -11,10 +11,12 @@ pandas = "^1.2.3"
 flask = "^1.1.2"
 googletrans = "^4.0.0-rc1"
 PyNaCl = "^1.4.0"
-youtube-dl = "^2021.4.17"
-pafy = "^0.5.5"
+youtube-dl = "^2021.4.26"
 validator = "^0.7.0"
 validators = "^0.18.2"
+pafy = "^0.5.5"
+docx = "^0.2.4"
+python-docx = "^0.8.11"
 
 [tool.poetry.dev-dependencies]
 
