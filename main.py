@@ -4,12 +4,13 @@ import re
 import pafy
 import urllib.request
 import validators
-import json
-import urllib
 import time
+import math
+import json
 from datetime import datetime
 from googletrans import Translator
-from wangy import *
+from wangy import singkat,panjang
+from supp_func import getHelp,getTitle,struct_to_second,wrapText
 from discord.ext import commands
 from keep_alive import keep_alive
 
@@ -21,21 +22,8 @@ errorEmbed.title = "!!! ERROR !!!"
 errorEmbed.description = errorMsg
 errorEmbed.color = discord.Colour.red()
 client = commands.Bot(command_prefix="$")
-#Music
-def getTitle(song_url):
-  title = ""
-  params = {"format": "json", "url": song_url}
-  url = "https://www.youtube.com/oembed"
-  query_string = urllib.parse.urlencode(params)
-  url = url + "?" + query_string
-  with urllib.request.urlopen(url) as response:
-      response_text = response.read()
-      data = json.loads(response_text.decode())
-      title += f"[{data['title']}]({song_url})\n"
-  return title
-
-FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5','options': '-vn'}
 client.remove_command('help')
+
 @client.event
 async def on_ready():
   print('We have logged in as {0.user}'.format(client))
@@ -45,53 +33,33 @@ def is_connected(ctx):
   return voice_client and voice_client.is_connected()
 @client.command(name='help', aliases=['h'])
 async def help(ctx):
-  pesan = ""
-  pesan += "Megumin Bot is bot to do some stuff\n\n"
-  pesan += "**Prefix**\n$\n"
-  pesan += "\n**Commands**\n"
-  pesan += "Leave Channel - $l\n"
-  pesan += "\n**Music**\n"
-  pesan += "Play music - $p\n"
-  pesan += "Stop music- $s\n"
-  pesan += "Skip current song- $n\n"
-  pesan += "Check queue- $q\n"
-  pesan += "Clear queue- $cl\n"
-  pesan += "Check current playing song - $np\n"
-  pesan += "Remove song from queue- $r\n"
-  pesan += "\n**Special Sound**\n"
-  pesan += "$play blok\n"
-  pesan += "$play badumtss\n"
-  pesan += "$play bangsat\n"
-  pesan += "**Translate** (not perfectly working)\n"
-  pesan += "Japan-to-Indonesia - $ja_id\n"
-  pesan += "Indonesia-to-Japan - $id_ja\n\n"
-  pesan += "**Special**\n"
-  pesan += "Wangy Template - $wangy\n\n"
-  pesan += "\nThe Weeb Behind This Bot:\n"
-  pesan += "[Aldy-san](https://github.com/aldy-san) and [Catyousha](https://github.com/Catyousha).\n\n"
-  pesan += "See [Github Repo](https://github.com/aldy-san/megumin-bot)."
+  pesan = getHelp()
   embed = discord.Embed()
   embed.title = "💥 Welcome to Megumin "+version+" 💥"
   embed.description = pesan
   embed.color = discord.Colour.red()
   await ctx.send(embed=embed)
 
+
 #MUSIC
+FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5','options': '-vn'}
 start = None
 song_queue=[]
 duration_queue=[]
-queue_now = 0
+queue_now = int(0)
+
 def play_next(ctx):
   voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
   global start
   global queue_now
-  if (queue != len(song_queue)):    
+  if (queue_now < len(song_queue)):    
       song = pafy.new(song_queue[queue_now]) 
       audio = song.getbestaudio()
       start = datetime.now()
       voice.play(discord.FFmpegPCMAudio(audio.url, **FFMPEG_OPTIONS), after=lambda x=None: play_next(ctx))
       voice.is_playing()
-      queue_now += 1
+      queue_now += int(1)
+      print("queue: "+str(queue_now))
   else:
     queue_now = 0
     voice.stop()
@@ -121,11 +89,12 @@ async def nowPlaying(ctx):
 @client.command(name='next', aliases=['n'])
 async def next(ctx):
   voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
+  voice.stop()
+  print(song_queue)
   embed = discord.Embed()
   embed.title = "Playing"
-  embed.description = getTitle(song_queue[queue_now+1])
+  embed.description = getTitle(song_queue[queue_now])
   embed.color = discord.Colour.red() 
-  voice.stop()
   await ctx.send(embed=embed)
 
 @client.command(name='play', aliases=['p'])
@@ -198,9 +167,9 @@ async def queue(ctx):
         response_text = response.read()
         data = json.loads(response_text.decode())
         print(idx)
-        print(queue_now)
+        print("now: "+str(queue_now))
         if (idx == queue_now):
-          queue = "=>"  
+          queue += "=>"  
         queue += f"[{idx+1}. {(data['title'][:43] + '..') if len(data['title']) > 40 else data['title']}]({x}) "+duration_queue[idx]+"left\n"
   embed.description = queue
   await ctx.send(embed=embed)   
