@@ -47,22 +47,26 @@ start = None
 song_queue=[]
 duration_queue=[]
 queue_now = int(0)
-
+is_play = True
 def play_next(ctx):
   voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
   global start
   global queue_now
-  if (queue_now < len(song_queue)):    
-      song = pafy.new(song_queue[queue_now]) 
-      audio = song.getbestaudio()
-      start = datetime.now()
-      voice.play(discord.FFmpegPCMAudio(audio.url, **FFMPEG_OPTIONS), after=lambda x=None: play_next(ctx))
-      voice.is_playing()
-      queue_now += int(1)
-      print("queue: "+str(queue_now))
-  else:
-    queue_now = 0
-    voice.stop()
+  global is_play
+  queue_now += int(1)
+  if is_play :
+    if (queue_now < len(song_queue)):    
+        song = pafy.new(song_queue[queue_now]) 
+        audio = song.getbestaudio()
+        start = datetime.now()
+        voice.play(discord.FFmpegPCMAudio(audio.url, **FFMPEG_OPTIONS), after=lambda x=None: play_next(ctx))
+        voice.is_playing()
+        print("queue: "+str(queue_now))
+    else:
+      del song_queue[:]
+      del duration_queue[:]
+      queue_now = 0
+      voice.stop()
     
 @client.command(name='nowPlaying', aliases=['np'])
 async def nowPlaying(ctx):
@@ -90,65 +94,76 @@ async def nowPlaying(ctx):
 async def next(ctx):
   voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
   voice.stop()
-  print(song_queue)
-  embed = discord.Embed()
-  embed.title = "Playing"
-  embed.description = getTitle(song_queue[queue_now])
-  embed.color = discord.Colour.red() 
-  await ctx.send(embed=embed)
+  global queue_now
+  global is_play
+  # queue_now += int(1)
+  if (queue_now < len(song_queue)-1):    
+    embed = discord.Embed()
+    embed.title = "Playing"
+    embed.description = getTitle(song_queue[queue_now+1])
+    embed.color = discord.Colour.red() 
+    await ctx.send(embed=embed)
+  else :
+    embed = discord.Embed()
+    embed.title = "No More Queue"
+    embed.color = discord.Colour.red() 
+    await ctx.send(embed=embed)
 
 @client.command(name='play', aliases=['p'])
 async def play(ctx, *arg):
-  voiceChannel = ctx.author.voice.channel
-  voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
-  if voiceChannel == None:
-    await ctx.send("Masuk channel dulu la Goblok")
-  if voice == None:
-    await voiceChannel.connect()
+  global is_play
+  if is_play: 
+    voiceChannel = ctx.author.voice.channel
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
-  else:
-    await voice.move_to(voiceChannel)
-  if arg[0] == "blok":
-    voice.play(discord.FFmpegPCMAudio("audio/blok.mp3"))
-  elif arg[0] == "badumtss":
-    voice.play(discord.FFmpegPCMAudio("audio/badumtss.mp3"))
-  elif arg[0] == "bangsat":
-    voice.play(discord.FFmpegPCMAudio("audio/bangsat.mp3"))
-  elif arg[0] == "gurenge":
-    voice.play(discord.FFmpegPCMAudio("audio/gurenge.mp3"))
-  else:
-    embed = discord.Embed()
-    embed.color = discord.Colour.red() 
-    arg = '+'.join(arg)
-    if validators.url(arg):
-      embed.description = getTitle(arg)
-      song_queue.append(arg)
-      embed.title = "Added to queue"
-      if not voice.is_playing():
-        song = pafy.new(arg)  
-        audio = song.getbestaudio() 
-        duration_queue.append(song.duration)
-        voice.play(discord.FFmpegPCMAudio(audio.url, **FFMPEG_OPTIONS), after=lambda x=None: play_next(ctx))
-        voice.is_playing()
-      await ctx.send(embed=embed)
+    if voiceChannel == None:
+      await ctx.send("Masuk channel dulu la Goblok")
+    if voice == None:
+      await voiceChannel.connect()
+      voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     else:
-      search = arg
-      html = urllib.request.urlopen("https://www.youtube.com/results?search_query=" + search)
-      video_ids = re.findall(r"watch\?v=(\S{11})", html.read().decode())
-      song_url = "https://www.youtube.com/watch?v=" + video_ids[0]
-      embed.description = getTitle(song_url)
-      song_queue.append(song_url)
-      embed.title = "Added to queue"
-      global start
-      start = datetime.now()
-      song = pafy.new(song_url)
-      duration_queue.append(song.duration)
-      if not voice.is_playing():
-        audio = song.getbestaudio()
-        voice.play(discord.FFmpegPCMAudio(audio.url, **FFMPEG_OPTIONS), after=lambda x=None: play_next(ctx))
-        voice.is_playing()
-      await ctx.send(embed=embed)
-
+      await voice.move_to(voiceChannel)
+    if arg[0] == "blok":
+      voice.play(discord.FFmpegPCMAudio("audio/blok.mp3"))
+    elif arg[0] == "badumtss":
+      voice.play(discord.FFmpegPCMAudio("audio/badumtss.mp3"))
+    elif arg[0] == "bangsat":
+      voice.play(discord.FFmpegPCMAudio("audio/bangsat.mp3"))
+    elif arg[0] == "gurenge":
+      voice.play(discord.FFmpegPCMAudio("audio/gurenge.mp3"))
+    else:
+      embed = discord.Embed()
+      embed.color = discord.Colour.red() 
+      arg = '+'.join(arg)
+      if validators.url(arg):
+        embed.description = getTitle(arg)
+        song_queue.append(arg)
+        embed.title = "Added to queue"
+        if not voice.is_playing():
+          song = pafy.new(arg)  
+          audio = song.getbestaudio() 
+          duration_queue.append(song.duration)
+          voice.play(discord.FFmpegPCMAudio(audio.url, **FFMPEG_OPTIONS), after=lambda x=None: play_next(ctx))
+          voice.is_playing()
+        await ctx.send(embed=embed)
+      else:
+        search = arg
+        html = urllib.request.urlopen("https://www.youtube.com/results?search_query=" + search)
+        video_ids = re.findall(r"watch\?v=(\S{11})", html.read().decode())
+        song_url = "https://www.youtube.com/watch?v=" + video_ids[0]
+        embed.description = getTitle(song_url)
+        song_queue.append(song_url)
+        embed.title = "Added to queue"
+        global start
+        start = datetime.now()
+        song = pafy.new(song_url)
+        duration_queue.append(song.duration)
+        if not voice.is_playing():
+          audio = song.getbestaudio()
+          voice.play(discord.FFmpegPCMAudio(audio.url, **FFMPEG_OPTIONS), after=lambda x=None: play_next(ctx))
+          voice.is_playing()
+        await ctx.send(embed=embed)
+  else:
+    is_play=True
 @client.command(name='queue', aliases=['q'])
 async def queue(ctx):
   queue = ""
@@ -176,7 +191,13 @@ async def queue(ctx):
 
 @client.command(name='stop', aliases=['s'])
 async def stop(ctx):
+  global is_play
+  global queue_now
+  is_play = False
   voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
+  del song_queue[:]
+  del duration_queue[:]
+  queue_now = 0
   voice.stop()
 
 @client.command(name='remove', aliases=['r'])
