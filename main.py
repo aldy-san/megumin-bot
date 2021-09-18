@@ -48,12 +48,16 @@ song_queue=[]
 duration_queue=[]
 queue_now = int(0)
 is_play = True
+is_loop = False
 def play_next(ctx):
   voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
   global start
   global queue_now
   global is_play
   queue_now += int(1)
+  if is_loop:
+    if (queue_now >= len(song_queue)):
+      queue_now = 0
   if is_play :
     if (queue_now < len(song_queue)):    
         song = pafy.new(song_queue[queue_now]) 
@@ -90,6 +94,10 @@ async def nowPlaying(ctx):
     embed.title = "No Song is Played"
   await ctx.send(embed=embed)
 
+@client.command(name='loop', aliases=['l'])
+async def loop(ctx):
+  global is_loop
+  is_loop = not is_loop
 @client.command(name='next', aliases=['n'])
 async def next(ctx):
   voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
