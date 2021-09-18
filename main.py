@@ -98,6 +98,13 @@ async def nowPlaying(ctx):
 async def loop(ctx):
   global is_loop
   is_loop = not is_loop
+  embed = discord.Embed()
+  if is_loop:
+    embed.title = "Looping Queue"
+  else:
+    embed.title = "Not Looping Queue"
+  embed.color = discord.Colour.red() 
+  await ctx.send(embed=embed)
 @client.command(name='next', aliases=['n'])
 async def next(ctx):
   voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
@@ -219,7 +226,7 @@ async def remove(ctx, arg):
     song_queue.pop(song_idx)
     await ctx.send("Successfully remove song")
 
-@client.command(name='leave', aliases=['l'])
+@client.command(name='leave', aliases=['le'])
 async def leave(ctx):
   voice = ctx.voice_client
   if voice is None:
